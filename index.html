@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional GIS mapping platform for Central Uganda community resources - healthcare, education, and public safety facilities.">
+    <meta name="keywords" content="GIS, Uganda, mapping, healthcare, education, community resources">
+    <title>Central Uganda GIS Platform - Community Resource Mapping</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Compact / reduced-scale overrides to make features smaller, tighter and visually consistent -->
+    <style>
+        /* overall page scale factor (tune this value for density) */
+        :root { --ui-scale: 0.90; }
+
+          /* Use full-screen layout: remove global transform so app uses full viewport */
+          :root { --ui-scale: 1; }
+          body { background: #fafafa; margin: 0; }
+
+          /* Make containers span full width so the page utilises whole screen */
+          .container { max-width: none; width: 100%; margin: 0; padding: 0 18px; }
+
+        /* Hero: tighter, shorter and more compact typography */
+        .hero { height: calc(56vh * var(--ui-scale)); padding: 1.6rem 0; display: flex; align-items: center; }
+        .hero-content { max-width: 980px; }
+        .hero-title { font-size: 1.9rem; margin-bottom: 0.3rem; line-height: 1.15; }
+        .hero-subtitle { font-size: 0.95rem; color: #3c3f46; margin-bottom: 0.6rem; }
+
+        /* Stat cards: compact pill look */
+        .hero-stats { display:flex; gap:10px; margin-bottom: 0.6rem; }
+        .hero-stats .stat-card { padding: 6px 10px; background: #fff; border-radius: 10px; box-shadow: 0 4px 14px rgba(28,31,36,0.06); }
+        .stat-number { font-size: 1.05rem; font-weight: 700; }
+        .stat-label { font-size: 0.78rem; color: #6b7280; }
+
+        /* Buttons: slightly smaller and with more contrast */
+        .hero-buttons { display:flex; gap:10px; margin-top:8px; }
+        .btn-primary { padding: 9px 14px; font-size: 0.95rem; border-radius: 8px; }
+        .btn-outline { padding: 8px 12px; font-size: 0.9rem; border-radius: 8px; }
+
+        /* Features grid: responsive cards with subtle elevation */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+        .feature-card { padding: 14px; background: #fff; border-radius: 10px; box-shadow: 0 6px 18px rgba(17,24,39,0.06); min-height: 120px; display:flex; flex-direction:column; gap:8px; }
+        .feature-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,#eef2ff,#fff); color:#3b82f6; font-size:1.05rem; }
+        .feature-card h3 { margin:0; font-size:1rem; }
+        .feature-card p { margin:0; color:#5f6670; font-size:0.88rem; }
+
+        /* Categories: tighter card grid */
+        .categories-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+        .category-card { padding:12px; background:#fff; border-radius:10px; box-shadow: 0 6px 18px rgba(17,24,39,0.06); }
+        .category-icon { width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.1rem; }
+
+        /* Navbar: compact and aligned */
+        .navbar .nav-container { padding: 8px 14px; align-items:center; display:flex; gap:12px; }
+        .logo span { font-size: 1rem; font-weight:700; margin-left:8px; }
+        .nav-menu li a { padding: 8px 10px; font-size:0.95rem; }
+
+        /* Footer: compact columns */
+        .footer .footer-grid { gap: 12px; }
+
+        /* Small screens: keep responsive spacing */
+        @media (max-width: 768px) {
+            .hero { padding: 1.2rem 0; }
+            .hero-title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="img/logo.svg" alt="UgandaGIS" style="height:28px;width:auto;" />
+                <span>CentralUgandaGIS</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="map.html">Interactive Map</a></li>
+                <li><a href="analytics.html">Analytics</a></li>
+                <li><a href="reports.html">Reports</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="guide.html">Guide</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn-secondary" onclick="window.location.href='map.html'">Launch Map</button>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero page-header">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Central Uganda Community Resource Mapping</h1>
+            <p class="hero-subtitle">Advanced GIS Platform for Healthcare, Education & Public Safety</p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-total">0</div>
+                    <div class="stat-label">Facilities Mapped</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-districts">0</div>
+                    <div class="stat-label">Districts Covered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-categories">0</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="window.location.href='map.html'">
+                    <i class="fas fa-map"></i> Explore Interactive Map
+                </button>
+                <button class="btn-outline" onclick="window.location.href='analytics.html'">
+                    <i class="fas fa-chart-bar"></i> View Analytics
+                </button>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Powerful GIS Features</h2>
+            <p class="section-subtitle">Everything you need for comprehensive spatial data analysis</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3>Interactive Mapping</h3>
+                    <p>Real-time interactive maps with advanced filtering, clustering, and heatmap visualization.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    <h3>Smart Search</h3>
+                    <p>Intelligent search with autocomplete, geolocation, and proximity-based results.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Comprehensive data analytics with charts, graphs, and statistical insights.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Multi-Layer Support</h3>
+                    <p>Toggle between multiple map layers including satellite, terrain, and street views.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3>Route Planning</h3>
+                    <p>Calculate optimal routes and distances between facilities with turn-by-turn directions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3>Data Export</h3>
+                    <p>Export data in multiple formats: CSV, Excel, GeoJSON, KML, and PDF reports.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <h3>Print Maps</h3>
+                    <p>Generate high-quality printable maps with custom legends and annotations.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Responsive</h3>
+                    <p>Fully responsive design optimized for desktop, tablet, and mobile devices.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Data Management</h3>
+                    <p>Easy-to-use interface for adding, editing, and managing facility information.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+<section class="categories">
+    <div class="container">
+        <h2 class="section-title">Facility Categories</h2>
+        <div class="categories-grid">
+            <div class="category-card">
+                <div class="category-icon" style="background: #e74c3c;">
+                    <i class="fas fa-hospital"></i>
+                </div>
+                <h3>Hospitals</h3>
+                <p>Major referral and general hospitals providing comprehensive medical services.</p>
+                <span class="category-count">28 Facilities</span>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon" style="background: #3498db;">
+                    <i class="fas fa-clinic-medical"></i>
+                </div>
+                <h3>Health Centers</h3>
+                <p>Primary healthcare facilities offering outpatient and maternity services.</p>
+                <span class="category-count">45 Facilities</span>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon" style="background: #2ecc71;">
+                    <i class="fas fa-notes-medical"></i>
+                </div>
+                <h3>Clinics</h3>
+                <p>Private medical clinics with specialized diagnostic and treatment services.</p>
+                <span class="category-count">85 Facilities</span>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon" style="background: #f39c12;">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Schools</h3>
+                <p>Educational institutions from primary to university level education.</p>
+                <span class="category-count">210 Facilities</span>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon" style="background: #34495e;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Police Stations</h3>
+                <p>Law enforcement facilities ensuring community safety and security.</p>
+                <span class="category-count">65 Facilities</span>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon" style="background: #9b59b6;">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3>Universities</h3>
+                <p>Higher education institutions offering degree and professional programs.</p>
+                <span class="category-count">12 Facilities</span>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon" style="background: #e67e22;">
+                    <i class="fas fa-fire-extinguisher"></i>
+                </div>
+                <h3>Fire Stations</h3>
+                <p>Emergency response services for fire and rescue operations.</p>
+                <span class="category-count">25 Facilities</span>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon" style="background: #27ae60;">
+                    <i class="fas fa-laptop-medical"></i>
+                </div>
+                <h3>Technology</h3>
+                <p>Internet cafes and technology centers providing digital services.</p>
+                <span class="category-count">1 Facility</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Explore Community Resources?</h2>
+            <p>Access comprehensive spatial data and analytics for Central Uganda</p>
+            <button class="btn-primary btn-large" onclick="window.location.href='map.html'">
+                <i class="fas fa-rocket"></i> Get Started Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3><i class="fas fa-map-marked-alt"></i> UgandaGIS</h3>
+                    <p>Professional GIS platform for community resource mapping and spatial analysis.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="map.html">Interactive Map</a></li>
+                        <li><a href="analytics.html">Analytics</a></li>
+                        <li><a href="reports.html">Reports</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#"></a></li>
+                        <li><a href="guide.html">User Guide</a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@ugandagis.com</li>
+                        <li><i class="fas fa-phone"></i> +256-740058639</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Kampala, Uganda</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 UgandaGIS Platform. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Smooth scroll
+        document.querySelector('.scroll-indicator').addEventListener('click', function() {
+            document.querySelector('.features').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Animate stats on scroll and bind live data
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-card, .feature-card, .category-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Populate live statistics from facilitiesData
+        try {
+            if (Array.isArray(facilitiesData)) {
+                const ALLOWED_TYPES = new Set(['Hospital','Health Center','School','Police Station','University','Clinic']);
+                const filtered = facilitiesData.filter(f => ALLOWED_TYPES.has(f.type));
+                const total = filtered.length;
+                const districts = new Set(filtered.map(f => (f.district || '').toString().trim()).filter(Boolean));
+                const categories = new Set(filtered.map(f => (f.type || f.category || '').toString().trim()).filter(Boolean));
+
+                const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val.toLocaleString(); };
+                setText('stat-total', total);
+                setText('stat-districts', districts.size);
+                setText('stat-categories', categories.size);
+            }
+        } catch(e) { console.warn('Could not populate stats', e); }
+    </script>
+</body>
+</html>

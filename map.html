@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map - UgandaGIS Platform</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="img/logo.svg" alt="UgandaGIS" style="height:28px;width:auto;" />
+                <span>CentralUgandaGIS</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html" class="active">Interactive Map</a></li>
+                <li><a href="guide.html">Guide</a></li>
+                <li><a href="analytics.html">Analytics</a></li>
+                <li><a href="reports.html">Reports</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="map-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-filter"></i> Filters & Tools</h2>
+            </div>
+
+            <!-- Search Section -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-search"></i> Search Facilities</h3>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by name, type, or location...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-layer-group"></i> Categories</h3>
+                <div class="filter-group">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="all" id="filterAll" checked>
+                        <span class="checkmark"></span>
+                        <span class="filter-label">All Facilities </span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="Hospital" class="category-filter" checked>
+                        <span class="checkmark hospital"></span>
+                        <span class="filter-label">Hospitals </span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="Health Center" class="category-filter" checked>
+                        <span class="checkmark health-center"></span>
+                        <span class="filter-label">Health Centers </span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="School" class="category-filter" checked>
+                        <span class="checkmark school"></span>
+                        <span class="filter-label">Schools </span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="Police Station" class="category-filter" checked>
+                        <span class="checkmark police"></span>
+                        <span class="filter-label">Police Stations </span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="University" class="category-filter" checked>
+                        <span class="checkmark university"></span>
+                        <span class="filter-label">Universities </span>
+                    </label>
+                  </div>
+            </div>
+
+            <!-- District Filter -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Districts</h3>
+                <select id="districtFilter" class="filter-select">
+                    <option value="all">All Districts</option>
+                    <option value="Kampala">Kampala</option>
+                    <option value="Wakiso">Wakiso</option>
+                    <option value="Butambala">Butambala</option>
+                    <option value="Buikwe">Buikwe</option>
+                    <option value="Bukomansimbi">Bukomansimbi</option>
+                    <option value="Buvuma">Buvuma</option>
+                    <option value="Gomba">Gomba</option>
+                    <option value="Kalangala">Kalangala</option>
+                    <option value="Kalungu">Kalungu</option>
+                    <option value="Kayunga">Kayunga</option>
+                    <option value="Kiboga">Kiboga</option>
+                    <option value="Kyankwanzi">Kyankwanzi</option>
+                    <option value="Kyotera">Kyotera</option>
+                    <option value="Luweero">Luweero</option>
+                    <option value="Lwengo">Lwengo</option>
+                    <option value="Lyantonde">Lyantonde</option>
+                    <option value="Masaka">Masaka</option>
+                    <option value="Mityana">Mityana</option>
+                    <option value="Mpigi">Mpigi</option>
+                    <option value="Mubende">Mubende</option>
+                    <option value="Mukono">Mukono</option>
+                    <option value="Nakaseke">Nakaseke</option>
+                    <option value="Nakasongola">Nakasongola</option>
+                    <option value="Rakai">Rakai</option>
+                    <option value="Sembabule">Sembabule</option>
+                </select>
+            </div>
+
+            <!-- Map Layers -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-map"></i> Map Layers</h3>
+                <div class="layer-buttons">
+                    <button class="layer-btn active" data-layer="street">
+                        <i class="fas fa-road"></i> Street
+                    </button>
+                    <button class="layer-btn" data-layer="satellite">
+                        <i class="fas fa-satellite"></i> Satellite
+                    </button>
+                    <button class="layer-btn" data-layer="terrain">
+                        <i class="fas fa-mountain"></i> Terrain
+                    </button>
+                </div>
+            </div>
+
+            <!-- Map Tools -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-tools"></i> Tools</h3>
+                <div class="tool-buttons">
+                    <button id="clusterToggle" class="tool-btn" title="Toggle Clustering">
+                        <i class="fas fa-object-group"></i> Clustering
+                    </button>
+                    <button id="heatmapToggle" class="tool-btn" title="Toggle Heatmap">
+                        <i class="fas fa-fire"></i> Heatmap
+                    </button>
+                    <button id="measureToggle" class="tool-btn" title="Measure Distance">
+                        <i class="fas fa-ruler"></i> Measure
+                    </button>
+                    <button id="printMap" class="tool-btn" title="Print Map">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+
+            <!-- Export Data -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-download"></i> Export Data</h3>
+                <div class="export-buttons">
+                    <button id="exportCSV" class="export-btn">
+                        <i class="fas fa-file-csv"></i> CSV
+                    </button>
+                    <button id="exportGeoJSON" class="export-btn">
+                        <i class="fas fa-file-code"></i> GeoJSON
+                    </button>
+                    <button id="exportKML" class="export-btn">
+                        <i class="fas fa-file-alt"></i> KML
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Panel -->
+           <div class="sidebar-section stats-panel">
+    <h3><i class="fas fa-chart-pie"></i> Statistics</h3>
+    <div class="stat-row">
+        <span>Visible Facilities:</span>
+        <strong id="visibleCount">850</strong>
+    </div>
+    <div class="stat-row">
+        <span>Total Mapped:</span>
+        <strong id="totalCount">850</strong>
+    </div>
+    <div class="stat-row">
+        <span>Active Filters:</span>
+        <strong id="activeFilters">0</strong>
+    </div>
+    <div class="stat-row">
+        <span>Districts Covered:</span>
+        <strong id="districtsCount">25</strong>
+    </div>
+    <div class="stat-row">
+        <span>Healthcare Facilities:</span>
+        <strong id="healthcareCount">380</strong>
+    </div>
+    <div class="stat-row">
+        <span>Education Facilities:</span>
+        <strong id="educationCount">320</strong>
+    </div>
+    <div class="stat-row">
+        <span>Public Safety Facilities:</span>
+        <strong id="safetyCount">150</strong>
+    </div>
+</div>
+        </aside>
+
+        <!-- Main Map Container -->
+        <main class="map-main">
+            <div class="map-controls">
+                <button id="myLocation" class="control-btn" title="My Location">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <button id="zoomIn" class="control-btn" title="Zoom In">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button id="zoomOut" class="control-btn" title="Zoom Out">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button id="resetView" class="control-btn" title="Reset View">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button id="fullscreen" class="control-btn" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button id="routingToggleBtn" class="control-btn" title="Toggle Routing">
+                    <i class="fas fa-route"></i>
+                </button>
+            </div>
+
+            <div id="map"></div>
+
+            <!-- Map Legend -->
+            <div class="map-legend">
+                <h4><i class="fas fa-info-circle"></i> Legend</h4>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-marker hospital">🏥</span>
+                        <span>Hospital</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker health-center">⚕️</span>
+                        <span>Health Center</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker clinic">💊</span>
+                        <span>Clinic</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker school">🎓</span>
+                        <span>School</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker police">👮</span>
+                        <span>Police Station</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coordinates Display -->
+            <div class="coordinates-display" id="coordsDisplay">
+                Lat: 0.0000, Lng: 0.0000
+            </div>
+        </main>
+
+        <!-- Right Panel (Facility Details) -->
+        <aside class="details-panel" id="detailsPanel">
+            <button class="close-panel" id="closePanel">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="panel-content" id="panelContent">
+                <div class="empty-state">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <p>Click on a facility marker to view details</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/utils.js"></script>
+</body>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3><i class="fas fa-map-marked-alt"></i> UgandaGIS</h3>
+                    <p>Professional GIS platform for community resource mapping and spatial analysis.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="map.html">Interactive Map</a></li>
+                        <li><a href="analytics.html">Analytics</a></li>
+                        <li><a href="reports.html">Reports</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        
+                        <li><a href="guide.html">User Guide</a></li>
+                        
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@ugandagis.com</li>
+                        <li><i class="fas fa-phone"></i> +256-740058639</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Kampala, Uganda</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 UgandaGIS Platform. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</html>

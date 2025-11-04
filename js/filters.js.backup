@@ -1,0 +1,229 @@
+// Filter management
+let activeFilters = {
+    categories: new Set(['Hospital', 'Health Center', 'Clinic', 'School', 'Police Station']),
+    districts: 'all',
+    searchQuery: ''
+};
+
+// Initialize filters
+document.addEventListener('DOMContentLoaded', function() {
+    setupFilterListeners();
+});
+
+function setupFilterListeners() {
+    // Category filters
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    categoryFilters.forEach(filter => {
+        filter.addEventListener('change', handleCategoryFilter);
+    });
+
+    // Select all filter
+    const filterAll = document.getElementById('filterAll');
+    if (filterAll) {
+        filterAll.addEventListener('change', handleSelectAll);
+    }
+
+    // District filter
+    const districtFilter = document.getElementById('districtFilter');
+    if (districtFilter) {
+        districtFilter.addEventListener('change', handleDistrictFilter);
+    }
+}
+
+// Handle category filter
+function handleCategoryFilter(e) {
+    const category = e.target.value;
+    if (e.target.checked) {
+        activeFilters.categories.add(category);
+    } else {
+        activeFilters.categories.delete(category);
+        document.getElementById('filterAll').checked = false;
+    }
+    applyFilters();
+    updateFilterStats();
+}
+
+// Handle select all
+function handleSelectAll(e) {
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    categoryFilters.forEach(filter => {
+        filter.checked = e.target.checked;
+        if (e.target.checked) {
+            activeFilters.categories.add(filter.value);
+        } else {
+            activeFilters.categories.delete(filter.value);
+        }
+    });
+    applyFilters();
+    updateFilterStats();
+}
+
+// Handle district filter
+function handleDistrictFilter(e) {
+    const selectedDistrict = e.target.value;
+    activeFilters.districts = selectedDistrict;
+    
+    // Remove existing district boundary if any
+    if (window.districtLayer) {
+        map.removeLayer(window.districtLayer);
+        window.districtLayer = null;
+    }
+
+    // If a specific district is selected
+    if (selectedDistrict !== 'all' && districtBoundaries[selectedDistrict]) {
+        const boundaryData = districtBoundaries[selectedDistrict];
+        
+        // Create and add district boundary using GeoJSON
+        window.districtLayer = L.geoJSON(boundaryData, {
+            style: districtStyle
+        }).addTo(map);
+        
+        // Zoom to district boundary
+        map.flyTo(boundaryData.center, boundaryData.zoom, {
+            duration: 1.5,
+            easeLinearity: 0.25
+        });
+        
+        // Fit bounds of the district with some padding
+        map.fitBounds(window.districtLayer.getBounds(), {
+            padding: [50, 50]
+        });
+    } else {
+        // Reset view to show all facilities
+        const bounds = L.latLngBounds(facilitiesData.map(f => f.coordinates));
+        map.flyToBounds(bounds, {
+            padding: [50, 50],
+            duration: 1.5
+        });
+    }
+
+    // Apply filters and update stats
+    applyFilters();
+    updateFilterStats();
+    updateDistrictStats(selectedDistrict);
+}
+
+// Apply all active filters
+function applyFilters() {
+    let filteredFacilities = facilitiesData;
+
+    // Filter by category
+    if (activeFilters.categories.size > 0) {
+        filteredFacilities = filteredFacilities.filter(f => 
+            activeFilters.categories.has(f.type)
+        );
+    }
+
+    // Filter by district
+    if (activeFilters.districts !== 'all') {
+        filteredFacilities = filteredFacilities.filter(f => 
+            f.district === activeFilters.districts
+        );
+    }
+
+    // Filter by search query
+    if (activeFilters.searchQuery) {
+        filteredFacilities = filteredFacilities.filter(f => 
+            f.name.toLowerCase().includes(activeFilters.searchQuery.toLowerCase()) ||
+            f.type.toLowerCase().includes(activeFilters.searchQuery.toLowerCase()) ||
+            f.district.toLowerCase().includes(activeFilters.searchQuery.toLowerCase())
+        );
+    }
+
+    // Update map markers
+    updateMapMarkers(filteredFacilities);
+    
+    // Update visible count
+    document.getElementById('visibleCount').textContent = filteredFacilities.length;
+}
+
+// Update map markers based on filtered data
+function updateMapMarkers(filteredFacilities) {
+    // Clear existing markers
+    markerClusterGroup.clearLayers();
+    
+    // Add filtered markers
+    markers = [];
+    filteredFacilities.forEach(facility => {
+        const marker = L.marker(facility.coordinates, {
+            icon: createMarkerIcon(facility.type),
+            title: facility.name
+        });
+
+        marker.bindPopup(createPopupContent(facility));
+        marker.facilityData = facility;
+        
+        markerClusterGroup.addLayer(marker);
+        markers.push(marker);
+    });
+}
+
+// Update filter statistics
+function updateFilterStats() {
+    let activeCount = 0;
+    
+    if (activeFilters.categories.size < 5) {
+        activeCount++;
+    }
+    
+    if (activeFilters.districts !== 'all') {
+        activeCount++;
+    }
+    
+    if (activeFilters.searchQuery) {
+        activeCount++;
+    }
+    
+    document.getElementById('activeFilters').textContent = activeCount;
+}
+
+// Update district statistics
+function updateDistrictStats(district) {
+    if (district === 'all') {
+        // Show overall statistics
+        document.querySelector('.stats-panel').innerHTML = `
+            <h3><i class="fas fa-chart-pie"></i> Statistics</h3>
+            <div class="stat-row">
+                <span>Visible Facilities:</span>
+                <strong id="visibleCount">${facilitiesData.length}</strong>
+            </div>
+            <div class="stat-row">
+                <span>Total Mapped:</span>
+                <strong>${facilitiesData.length}</strong>
+            </div>
+            <div class="stat-row">
+                <span>Active Filters:</span>
+                <strong id="activeFilters">0</strong>
+            </div>
+        `;
+        return;
+    }
+
+    // Filter facilities for selected district
+    const districtFacilities = facilitiesData.filter(f => f.district === district);
+    
+    // Count facilities by type
+    const typeCounts = districtFacilities.reduce((acc, f) => {
+        acc[f.type] = (acc[f.type] || 0) + 1;
+        return acc;
+    }, {});
+
+    // Update stats panel with district-specific information
+    document.querySelector('.stats-panel').innerHTML = `
+        <h3><i class="fas fa-chart-pie"></i> ${district} Statistics</h3>
+        <div class="stat-row">
+            <span>Total Facilities:</span>
+            <strong>${districtFacilities.length}</strong>
+        </div>
+        ${Object.entries(typeCounts).map(([type, count]) => `
+            <div class="stat-row">
+                <span>${type}s:</span>
+                <strong>${count}</strong>
+            </div>
+        `).join('')}
+        <div class="stat-row">
+            <span>Active Filters:</span>
+            <strong id="activeFilters">1</strong>
+        </div>
+    `;
+}

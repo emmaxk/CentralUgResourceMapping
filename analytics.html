@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - UgandaGIS Platform</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/analytics.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="img/logo.svg" alt="UgandaGIS" style="height:28px;width:auto;" />
+                <span>CentralUgandaGIS</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html">Interactive Map</a></li>
+                <li><a href="analytics.html" class="active">Analytics</a></li>
+                <li><a href="reports.html">Reports</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="analytics-container container">
+        <header class="analytics-header page-header">
+            <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
+            <p class="page-subtitle">Comprehensive data insights and statistics</p>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card card-primary">
+                <div class="card-icon">
+                    <i class="fas fa-hospital-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Total Facilities</h3>
+                    <p class="card-number">20</p>
+                    <span class="card-trend positive">
+                        <i class="fas fa-arrow-up"></i> 15% increase
+                    </span>
+                </div>
+            </div>
+
+            <div class="summary-card card-success">
+                <div class="card-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Districts Covered</h3>
+                    <p class="card-number">3</p>
+                    <span class="card-info">Central Region</span>
+                </div>
+            </div>
+
+            <div class="summary-card card-warning">
+                <div class="card-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Categories</h3>
+                    <p class="card-number">5</p>
+                    <span class="card-info">Types of Facilities</span>
+                </div>
+            </div>
+
+            <div class="summary-card card-info">
+                <div class="card-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Avg. Rating</h3>
+                    <p class="card-number">4.1</p>
+                    <span class="card-trend positive">
+                        <i class="fas fa-arrow-up"></i> 0.3 points
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-pie-chart"></i> Facilities by Type</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-bar-chart"></i> Distribution by District</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="districtChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card chart-wide">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-area"></i> Category Comparison</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+</html>
